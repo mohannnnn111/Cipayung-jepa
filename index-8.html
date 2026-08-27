@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>untuk zheva — surat kecil dari aku</title>
+  <meta name="description" content="Surat digital kecil untuk Zheva." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --background: oklch(0.985 0.014 78);
+      --foreground: oklch(0.28 0.05 20);
+      --primary: oklch(0.68 0.17 12);
+      --primary-soft: oklch(0.68 0.17 12 / 0.8);
+      --muted: oklch(0.52 0.05 25);
+      --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+      --font-script: "Caveat", "Segoe Script", cursive;
+      --shadow-frame: 0 24px 60px -24px oklch(0.5 0.14 340 / 0.4);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--foreground);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: clip;
+    }
+
+    .canvas-warm {
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+      background:
+        radial-gradient(60% 45% at 12% 8%, oklch(0.9 0.09 20 / 0.65), transparent 70%),
+        radial-gradient(55% 40% at 88% 18%, oklch(0.88 0.08 300 / 0.6), transparent 72%),
+        radial-gradient(70% 50% at 50% 100%, oklch(0.92 0.09 70 / 0.7), transparent 75%),
+        linear-gradient(170deg, oklch(0.99 0.015 85), oklch(0.97 0.025 40));
+    }
+
+    .grain::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.20;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>");
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(46px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .blob-one {
+      left: -18%;
+      top: -6%;
+      width: 16rem;
+      height: 16rem;
+      background: oklch(0.86 0.11 20 / 0.55);
+      animation: drift 16s ease-in-out infinite;
+    }
+
+    .blob-two {
+      right: -14%;
+      top: 22%;
+      width: 14rem;
+      height: 14rem;
+      background: oklch(0.85 0.09 300 / 0.5);
+      animation: drift 16s ease-in-out -4s infinite;
+    }
+
+    .blob-three {
+      bottom: 8%;
+      left: -10%;
+      width: 18rem;
+      height: 18rem;
+      background: oklch(0.9 0.1 75 / 0.5);
+      animation: drift 16s ease-in-out -8s infinite;
+    }
+
+    .sprinkles {
+      position: absolute;
+      width: 100%;
+      max-width: 100%;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .sprinkle {
+      position: absolute;
+      color: var(--primary-soft);
+      animation: float-soft 6s ease-in-out infinite;
+    }
+
+    .intro {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      width: 100%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      overflow: hidden;
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .intro.leaving {
+      opacity: 0;
+      transform: translateY(-24px);
+      pointer-events: none;
+    }
+
+    .intro-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      width: min(100%, 24rem);
+      max-width: 24rem;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .intro img {
+      width: min(68vw, 280px);
+      max-width: 280px;
+      object-fit: contain;
+      filter: drop-shadow(0 24px 40px oklch(0.5 0.12 20 / 0.35));
+      animation: rise-in 1.7s cubic-bezier(0.19, 1, 0.22, 1) both;
+    }
+
+    .script {
+      font-family: var(--font-script);
+    }
+
+    .intro-title {
+      margin: 1.15rem 0 0;
+      transform: rotate(-2deg);
+      text-align: center;
+      font-size: clamp(2.25rem, 10vw, 3rem);
+      line-height: 1;
+      color: var(--primary);
+      animation: ink-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) 1.4s both;
+    }
+
+    .main {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      max-width: 46rem;
+      min-width: 0;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 7rem;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .main.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    section {
+      position: relative;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px) scale(0.985);
+      transition:
+        opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.shown {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--primary-soft);
+      font-size: 1.5rem;
+      line-height: 1;
+      transform: rotate(-2deg);
+    }
+
+    .message {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .message p,
+    .page-two h2 {
+      margin: 0;
+    }
+
+    .message p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: oklch(0.28 0.05 20 / 0.85);
+    }
+
+    .message p:first-child {
+      font-size: clamp(1.85rem, 7vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.035em;
+      color: var(--foreground);
+    }
+
+    .message p:nth-child(3) {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: oklch(0.32 0.07 340);
+    }
+
+    .photo-block {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .photo-frame {
+      width: clamp(190px, 68%, 340px);
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0.6rem;
+      border-radius: 1.5rem;
+      background: linear-gradient(150deg, oklch(1 0 0 / 0.9), oklch(0.96 0.04 340 / 0.75));
+      box-shadow: var(--shadow-frame);
+    }
+
+    .photo-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 1.1rem;
+      object-fit: cover;
+    }
+
+    .caption {
+      margin: 1.25rem 0 0;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .divider {
+      margin: 6rem auto;
+      width: 8rem;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        oklch(0.68 0.17 12 / 0.5),
+        transparent
+      );
+    }
+
+    .page-two h2 {
+      font-size: clamp(1.5rem, 6vw, 1.9rem);
+      font-weight: 800;
+      line-height: 1.35;
+      letter-spacing: -0.025em;
+    }
+
+    .page-two .photo-one {
+      margin-top: 3.5rem;
+    }
+
+    .page-two .photo-two {
+      margin-top: 5rem;
+    }
+
+    .love {
+      margin: 4rem 0 0;
+      text-align: center;
+      font-size: clamp(3rem, 12vw, 4.5rem);
+      line-height: 1;
+      color: var(--primary);
+      animation: float-soft 6s ease-in-out infinite;
+    }
+
+    .final {
+      margin-top: 12rem;
+    }
+
+    .final .caption {
+      margin-top: 1.5rem;
+      font-size: clamp(1.4rem, 6vw, 1.9rem);
+      letter-spacing: 0.12em;
+    }
+
+    @keyframes rise-in {
+      from {
+        opacity: 0;
+        transform: translateY(70vh) scale(0.94);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes ink-in {
+      from {
+        opacity: 0;
+        transform: translateY(14px) rotate(-2deg);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) rotate(-2deg);
+      }
+    }
+
+    @keyframes float-soft {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-9px) rotate(1.5deg);
+      }
+    }
+
+    @keyframes drift {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+      50% {
+        transform: translate(14px, -18px) scale(1.06);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .intro {
+        padding: 1rem;
+      }
+
+      .intro-content {
+        transform: translateY(-1vh);
+      }
+
+      .intro img {
+        width: min(64vw, 260px);
+      }
+
+      .intro-title {
+        font-size: clamp(2.1rem, 9vw, 2.7rem);
+      }
+
+      .main {
+        padding-top: 3.25rem;
+        padding-bottom: 5rem;
+      }
+    }
+
+    @media (min-width: 640px) {
+      .main {
+        padding-left: 2.5rem;
+        padding-right: 2.5rem;
+      }
+
+      .message p {
+        font-size: 1.125rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .animate,
+      .intro img,
+      .intro-title,
+      .blob,
+      .sprinkle,
+      .love {
+        animation: none !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="canvas-warm grain">
+    <div class="blob blob-one"></div>
+    <div class="blob blob-two"></div>
+    <div class="blob blob-three"></div>
+
+    <div class="intro canvas-warm grain" id="intro">
+      <div class="blob blob-one"></div>
+      <div class="blob blob-two"></div>
+
+      <div class="intro-content">
+        <img
+          src="https://i.ibb.co.com/tTxp03Gw/32dc2456-fdf6-4148-a9f7-84b81bd46ee6-removalai-preview.png"
+          alt="Zheva"
+        />
+        <p class="script intro-title">p zhevana Cipayung</p>
+      </div>
+    </div>
+
+    <main class="main" id="main">
+      <div class="sprinkles" aria-hidden="true">
+        <span class="sprinkle" style="top:12%;left:8%;font-size:1.1rem;animation-delay:0s">✦</span>
+        <span class="sprinkle" style="top:26%;left:86%;font-size:.9rem;animation-delay:-1.2s">♥</span>
+        <span class="sprinkle" style="top:44%;left:6%;font-size:.7rem;animation-delay:-2.4s">•</span>
+        <span class="sprinkle" style="top:58%;left:90%;font-size:.8rem;animation-delay:-3.1s">✦</span>
+        <span class="sprinkle" style="top:74%;left:12%;font-size:1rem;animation-delay:-1.8s">♥</span>
+        <span class="sprinkle" style="top:88%;left:80%;font-size:1rem;animation-delay:-2.9s">✧</span>
+      </div>
+
+      <section>
+        <div class="reveal">
+          <p class="script eyebrow">untuk zheva ✿</p>
+        </div>
+
+        <div class="message">
+          <div class="reveal"><p>Haiiii zhevaaaaaa</p></div>
+          <div class="reveal" data-delay="60"><p>Akuuu kangen 🥺🥺🥺</p></div>
+          <div class="reveal" data-delay="120"><p>Main yuuuu tanggal 5 sama tanggal 6 September nantiiiii ehehehehhehehe</p></div>
+          <div class="reveal" data-delay="180"><p>Aku gengsi ngobrol langsung di chat , jadi buat ini aja hehehe</p></div>
+          <div class="reveal" data-delay="240"><p>Kamu semangat terus yaaa , aku bangga sama kamu</p></div>
+          <div class="reveal" data-delay="300"><p>Kamu cerita apa aja mau ga penting atau ga penting buat kamu ,aku peduli! (Jadi cerita!!!! 😡)</p></div>
+          <div class="reveal" data-delay="360"><p>Bodoamattttt lagi gabut jadi bikin web aja lagi buat kamuu 🙄</p></div>
+        </div>
+
+        <div class="reveal photo-block" data-delay="120" style="margin-top:4rem">
+          <div class="photo-frame" style="transform:rotate(-2deg)">
+            <img
+              src="https://i.ibb.co.com/0V8xp7Z2/IMG-20260827-WA0003.jpg"
+              alt="Zheva"
+              loading="lazy"
+            />
+          </div>
+          <p class="caption">Ini kamu 🙄</p>
+        </div>
+      </section>
+
+      <div class="reveal divider"></div>
+
+      <section class="page-two">
+        <div class="reveal">
+          <h2>bagus ga gambar nya ? Skskksksk 🥺🥹</h2>
+        </div>
+
+        <div class="reveal photo-one" data-delay="100">
+          <div class="photo-frame" style="transform:rotate(1.8deg)">
+            <img
+              src="https://i.ibb.co.com/Mk9sGt9g/IMG-20260827-WA0001.jpg"
+              alt="Foto kenangan"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        <div class="reveal photo-two" data-delay="100">
+          <div class="photo-frame" style="transform:rotate(-2.2deg)">
+            <img
+              src="https://i.ibb.co.com/zhm2TgPP/IMG-20260802-WA0035.jpg"
+              alt="Foto kenangan"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        <div class="reveal" data-delay="200">
+          <p class="script love">Loveeeee youuuuuuu</p>
+        </div>
+      </section>
+
+      <section class="final">
+        <div class="reveal">
+          <div class="photo-frame" style="transform:rotate(2.5deg)">
+            <img
+              src="https://i.ibb.co.com/Kx65jBCh/IMG-20260827-WA0000.jpg"
+              alt="Foto terakhir"
+              loading="lazy"
+            />
+          </div>
+          <p class="caption">🫡🫡🫡🫡😭😭😭😭</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const intro = document.getElementById("intro");
+      const main = document.getElementById("main");
+
+      // Intro: mengikuti timing versi asli, lalu membuka halaman utama.
+      window.setTimeout(() => {
+        intro.classList.add("leaving");
+      }, 3900);
+
+      window.setTimeout(() => {
+        intro.style.display = "none";
+        main.classList.add("visible");
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }, 5000);
+
+      // Reveal-on-scroll, menggantikan hook useReveal dari versi React.
+      const reveals = document.querySelectorAll(".reveal");
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+
+            const element = entry.target;
+            const delay = Number(element.dataset.delay || 0);
+
+            window.setTimeout(() => {
+              element.classList.add("shown");
+            }, delay);
+
+            obs.unobserve(element);
+          });
+        }, {
+          threshold: 0.15,
+          rootMargin: "0px 0px -8% 0px"
+        });
+
+        reveals.forEach(element => observer.observe(element));
+      } else {
+        reveals.forEach(element => element.classList.add("shown"));
+      }
+    })();
+  </script>
+</body>
+</html>
